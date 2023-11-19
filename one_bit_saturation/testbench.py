@@ -6,7 +6,7 @@ from cocotb.triggers import RisingEdge
 async def one_bit_saturation(dut):
 
     # print out top-level info
-    print(dir(dut))
+    #print(dir(dut))
 
-    # generate a clock
-    cocotb.start_soon(Clock(dut.clk))
+    # generate a clock with a 10 ns period
+    cocotb.start_soon(Clock(dut.clk, 10, 'ns').start())

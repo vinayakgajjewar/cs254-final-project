@@ -4,12 +4,12 @@
 SIM ?= icarus
 TOPLEVEL_LANG ?= verilog
 
-VERILOG_SOURCES = bht.v
+VERILOG_SOURCES = one_bit_saturation.v
 
 # use VHDL_SOURCES for VHDL files
 
 # TOPLEVEL is the name of the toplevel module in your Verilog or VHDL file
-TOPLEVEL = bht
+TOPLEVEL = one_bit_saturation
 
 # MODULE is the basename of the Python test file
 MODULE = testbench
