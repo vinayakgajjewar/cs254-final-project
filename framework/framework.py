@@ -12,7 +12,7 @@ class Framework:
     def get_next_branch_record():
         pass
 
-    def get_prediction(self):
+    def predict_branch(self):
         pass
     
     # This method provides a way for us to update the state of the predictor
