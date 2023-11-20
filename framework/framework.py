@@ -3,9 +3,24 @@
 # predictor-agnostic functionality. all the different cocotb testbenches will
 # use the functionality that we implement in framework.py
 
+from branch_record import BranchRecord
+
 class Framework:
+
+    # Return an object of type BranchRecord if there is still another branch
+    # record left in the trace. Return false otherwise.
+    def get_next_branch_record():
+        pass
+
     def get_prediction(self):
         pass
+    
+    # This method provides a way for us to update the state of the predictor
+    # after a prediction has been made. We'll provide the branch record and some
+    # state information as well as whether or not the branch was taken.
+    # Returns:
+    # - 
+    # TODO wrong place for this method?
     def update_predictor(self):
         pass
     
@@ -16,7 +31,11 @@ class Framework:
 def get_prediction(dut):
     return 
 
-def calculate_misprediction_rate(num_branchs, num_correct_predicts, num_instructions):
+def calculate_misprediction_rate(
+    num_branchs,
+    num_correct_predicts,
+    num_instructions
+    ):
 
     # calculate misprediction rate
     num_mispredictions = num_branchs - num_correct_predicts
