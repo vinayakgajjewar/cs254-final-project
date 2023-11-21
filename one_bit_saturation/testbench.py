@@ -3,11 +3,22 @@ import cocotb
 from cocotb.clock import Clock
 from cocotb.triggers import RisingEdge
 
+# Ugly hack
+# https://stackoverflow.com/questions/6323860/sibling-package-imports
+import sys, os
+sys.path.insert(0, os.path.abspath('..'))
+
+from framework.framework import Framework
+
 @cocotb.test()
 async def one_bit_saturation(dut):
 
     # print out top-level info
     #print(dir(dut))
+
+    f = Framework()
+    f.say_hi()
+    print("HI HI HI")
 
     # generate a clock with a 10 ns period
     cocotb.start_soon(Clock(dut.clk, 10, 'ns').start())

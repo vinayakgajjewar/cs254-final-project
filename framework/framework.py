@@ -3,9 +3,37 @@
 # predictor-agnostic functionality. all the different cocotb testbenches will
 # use the functionality that we implement in framework.py
 
-from branch_record import BranchRecord
+class BranchRecord:
+
+    # true if the branch is indirect, false otherwise
+    in_indirect = False
+
+    # true if the branch is a conditional, false otherwise
+    is_conditional = False
+
+    # true if the branch is a call, false otherwise
+    is_call = False
+
+    # true if the branch is a return, false otherwise
+    is_return = False
+
+    # the value of the branch's PC (program counter)
+    instruction_address = 0x0
+
+    # the target of the branch if it's taken; branches that aren't conditionals
+    # are always taken.
+    branch_target = 0x0
+
+    # the PC of the instruction following the branch
+    next_address = 0x0
+
+    def __init__(self):
+        pass
 
 class Framework:
+
+    def say_hi(self):
+        print("HELLO HELLO HELLO")
 
     # Return an object of type BranchRecord if there is still another branch
     # record left in the trace. Return false otherwise.
