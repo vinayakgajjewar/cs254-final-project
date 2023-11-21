@@ -32,13 +32,14 @@ class BranchRecord:
 
 class Framework:
 
-    def say_hi(self):
-        print("HELLO HELLO HELLO")
+    num_branches = 0
+    num_correct_predicts = 0
+    num_instructions = 0
 
     # Return an object of type BranchRecord if there is still another branch
     # record left in the trace. Return false otherwise.
-    def get_next_branch_record():
-        pass
+    def get_next_branch_record(self):
+        print("getting the next branch...")
 
     def predict_branch(self):
         pass
@@ -54,24 +55,17 @@ class Framework:
     
     # we want to give the misprediction rate per 1000 instructions
     def calculate_misprediction_rate(self):
-        pass
+        num_mispredicts = self.num_branches - self.num_correct_predicts
+        if (self.num_instructions != 0):
+            mispredict_rate = (num_mispredicts / self.num_instructions) / 1000
+        else:
+            print("no instructions given; can't evaluate mispredict rate")
+            return
+        print(f"number of branches = {self.num_branches}")
+        print(f"number of correct predictions = {self.num_correct_predicts}")
+        print(f"number of instructions = {self.num_instructions}")
+        print(f"number of mispredictions = {num_mispredicts}")
+        print(f"misprediction rate per 1000 instructions = {mispredict_rate}")
 
 def get_prediction(dut):
     return 
-
-def calculate_misprediction_rate(
-    num_branchs,
-    num_correct_predicts,
-    num_instructions
-    ):
-
-    # calculate misprediction rate
-    num_mispredictions = num_branchs - num_correct_predicts
-    misprediction_rate = (num_mispredictions / num_instructions) / 1000
-
-    # print out the statistics
-    print(f"number of branches = {num_branches}")
-    print(f"number of correct predictions = {num_correct_predicts}")
-    print(f"number of instructions = {num_instructions}")
-    print(f"number of mispredictions = {num_mispredictions}")
-    print(f"misprediction rate per 1000 instructions = {misprediction_rate}")

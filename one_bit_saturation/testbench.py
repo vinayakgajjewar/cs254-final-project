@@ -3,7 +3,7 @@ import cocotb
 from cocotb.clock import Clock
 from cocotb.triggers import RisingEdge
 
-# Ugly hack
+# Ugly hack to import a sibling package
 # https://stackoverflow.com/questions/6323860/sibling-package-imports
 import sys, os
 sys.path.insert(0, os.path.abspath('..'))
@@ -13,12 +13,8 @@ from framework.framework import Framework
 @cocotb.test()
 async def one_bit_saturation(dut):
 
-    # print out top-level info
-    #print(dir(dut))
-
+    # create an instance of our framework
     f = Framework()
-    f.say_hi()
-    print("HI HI HI")
 
     # generate a clock with a 10 ns period
     cocotb.start_soon(Clock(dut.clk, 10, 'ns').start())
@@ -33,9 +29,14 @@ async def one_bit_saturation(dut):
     # TODO why is this sometimes printing out 'z' ???
     for count in range(10):
         await RisingEdge(dut.clk)
+
+        # get the next branch instruction from the framework
+        next_branch = f.get_next_branch_record()
+
         dut.branch_taken.value = random.randint(0, 1)
         dut.counter.value = random.randint(0, 1)
         print(f"state: {dut.counter_reg.value}")
         print(f"prediction: {dut.predict.value}")
     
-    # TODO how do we generate misprediction %?
+    # get misprediction statistics
+    f.calculate_misprediction_rate()
