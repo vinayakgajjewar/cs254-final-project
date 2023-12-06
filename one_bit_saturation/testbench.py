@@ -8,13 +8,13 @@ from cocotb.triggers import RisingEdge
 import sys, os
 sys.path.insert(0, os.path.abspath('..'))
 
-from framework.framework import Framework
+from framework.framework import Evaluator
 
 @cocotb.test()
 async def one_bit_saturation(dut):
 
     # create an instance of our framework
-    f = Framework()
+    f = Evaluator()
 
     # generate a clock with a 10 ns period
     cocotb.start_soon(Clock(dut.clk, 10, 'ns').start())
