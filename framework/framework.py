@@ -26,6 +26,7 @@ class Instruction:
 
     # Parses a line from the trace and populates the instance variables.
     def parse_instruction(self, instr):
+        self.instruction_pc, self.is_branch_taken = instr.split()
         return True
 
     def load(self):
@@ -38,7 +39,8 @@ class Instruction:
         return self.is_op
 
     def branch(self):
-        return self.is_branch
+        #return self.is_branch
+        return True
 
     def floating_point(self):
         return self.is_floating_point
@@ -82,10 +84,11 @@ class Evaluator:
 
     # Parse a trace file and read all instructions
     def load_trace(self):
-        file_path = "my_file_path.txt"
+        file_path = "../traces/trace_01"
         try:
             with open(file_path, 'r') as trace:
                 for line in trace:
+                    #print(line)
                     instr = Instruction()
                     parsed = instr.parse_instruction(line)
                     if not parsed:
@@ -93,6 +96,7 @@ class Evaluator:
                     if instr.branch():
                         self.instructions.append(instr)
                         self.num_instructions += 1
+            print(f"Done loading trace file, found {self.num_instructions} instructions")
         except FileNotFoundError:
             print(f"The file '{file_path}' was not found.")
         except Exception as e:
@@ -108,6 +112,7 @@ class Evaluator:
     # record left in the trace. Return null otherwise.
     def get_next_branch_record(self):
         if self.curr_instr >= self.num_instructions:
+            print("ERROR: no branch records left in the program trace")
             return None
         instr = self.instructions[self.curr_instr]
         # TODO: Populate more fields

@@ -13,8 +13,9 @@ from framework.framework import Evaluator
 @cocotb.test()
 async def one_bit_saturation(dut):
 
-    # create an instance of our framework
-    f = Evaluator()
+    # create an instance of our evaluator
+    evaluator = Evaluator()
+    evaluator.load_trace()
 
     # generate a clock with a 10 ns period
     cocotb.start_soon(Clock(dut.clk, 10, 'ns').start())
@@ -31,12 +32,20 @@ async def one_bit_saturation(dut):
         await RisingEdge(dut.clk)
 
         # get the next branch instruction from the framework
-        next_branch = f.get_next_branch_record()
+        next_branch = evaluator.get_next_branch_record()
+        print(f"instruction pc: {next_branch.pc}")
+        #print(f"is branch taken: {next_branch.is_branch_taken}")
 
         dut.branch_taken.value = random.randint(0, 1)
         dut.counter.value = random.randint(0, 1)
         print(f"state: {dut.counter_reg.value}")
         print(f"prediction: {dut.predict.value}")
+
+        # pass our prediction along
+        if (dut.predict.value != "z"):
+            evaluator.predict_branch(dut.predict.value)
+        else:
+            print("Why is this happening?!")
     
     # get misprediction statistics
-    f.calculate_misprediction_rate()
+    evaluator.calculate_misprediction_rate()
