@@ -78,15 +78,15 @@ class BranchRecord:
 class Evaluator:
     def __init__(self):
         self.num_correct_predicts = 0
+        self.num_mispredicts = 0
         self.num_instructions = 0
         self.instructions = []  # stored only branch instructions
         self.curr_instr = 0 # to seek into self.instructions
 
     # Parse a trace file and read all instructions
-    def load_trace(self):
-        file_path = "../traces/trace_01"
+    def load_trace(self, path):
         try:
-            with open(file_path, 'r') as trace:
+            with open(path, 'r') as trace:
                 for line in trace:
                     #print(line)
                     instr = Instruction()
@@ -103,16 +103,23 @@ class Evaluator:
             print(f"An error occurred: {e}")
 
     def reset(self):
+
+        # We want to keep a tally of both correct predictions and mispredictions
+        # (even though it seems redundant) so that if the user want to get the
+        # misprediction statistics before going through all the branch records,
+        # the results are accurate.
         self.num_correct_predicts = 0
+        self.num_mispredicts = 0
+
         self.num_instructions = 0
         self.instructions.clear()
         self.curr_instr = 0
 
     # Return an object of type BranchRecord if there is still another branch
-    # record left in the trace. Return null otherwise.
+    # record left in the trace. Return None otherwise.
     def get_next_branch_record(self):
         if self.curr_instr >= self.num_instructions:
-            print("ERROR: no branch records left in the program trace")
+            print("No branch records left in the program trace")
             return None
         instr = self.instructions[self.curr_instr]
         # TODO: Populate more fields
@@ -138,20 +145,17 @@ class Evaluator:
             print("Cool! Framework says you are correct")
             self.num_correct_predicts += 1
             return True
+        self.num_mispredicts += 1
         return False
     
-    # We want to give the misprediction rate per 1000 instructions
+    # 
     def calculate_misprediction_rate(self):
-        num_mispredicts = self.num_instructions - self.num_correct_predicts
-        if (self.num_instructions != 0):
-            mispredict_rate = (num_mispredicts / self.num_instructions) / 1000
-        else:
-            print("no instructions given; can't evaluate mispredict rate")
-            return
-        print(f"number of branches = {self.num_instructions}")
+        num_total_predicts = self.num_correct_predicts + self.num_mispredicts
+        mispredict_rate = (self.num_mispredicts / num_total_predicts)
+        print(f"number of branches = {num_total_predicts}") # TODO this is wrong! Only count # of branches that we've seen so far
         print(f"number of correct predictions = {self.num_correct_predicts}")
-        print(f"number of mispredictions = {num_mispredicts}")
-        print(f"misprediction rate per 1000 instructions = {mispredict_rate}")
+        print(f"number of mispredictions = {self.num_mispredicts}")
+        print(f"misprediction rate = {mispredict_rate}")
 
 def get_prediction(dut):
     return 

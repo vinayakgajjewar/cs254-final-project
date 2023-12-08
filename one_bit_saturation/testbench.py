@@ -16,7 +16,7 @@ async def one_bit_saturation(dut):
     evaluator = Evaluator()
 
     # TODO We want to be able to specify which trace here.
-    evaluator.load_trace()
+    evaluator.load_trace("../traces/trace_10")
 
     # generate a clock with a 10 ns period
     cocotb.start_soon(Clock(dut.clk, 10, 'ns').start())
@@ -33,7 +33,7 @@ async def one_bit_saturation(dut):
     # Get the next branch record from the trace (if there is one left.)
     next_branch = evaluator.get_next_branch_record()
     #while (next_branch):
-    for i in range(10):
+    for i in range(1000):
         await RisingEdge(dut.clk)
         print(f"instruction pc: {next_branch.pc}")
 
