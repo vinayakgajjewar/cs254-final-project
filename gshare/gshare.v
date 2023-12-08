@@ -1,6 +1,6 @@
 module gshare (
-    input wire clock,
-    input wire reset,
+  input wire clock,
+  input wire reset,
   input wire [31:0] pc,          // Program Counter
   input wire branch,             // Branch instruction
   input wire actual_outcome,      // Actual outcome of the branch (1 for taken, 0 for not taken)
