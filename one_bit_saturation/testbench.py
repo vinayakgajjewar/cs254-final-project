@@ -26,6 +26,8 @@ async def one_bit_saturation(dut):
         await RisingEdge(dut.clk)
     dut.rst.value = 0
 
+    dut.counter.value = 0
+
     # run for 100 ns, generating random inputs for now
     # TODO why is this sometimes printing out 'z' ???
     for count in range(10):
@@ -41,11 +43,8 @@ async def one_bit_saturation(dut):
         print(f"state: {dut.counter_reg.value}")
         print(f"prediction: {dut.predict.value}")
 
-        # pass our prediction along
-        if (dut.predict.value != "z"):
-            evaluator.predict_branch(dut.predict.value)
-        else:
-            print("Why is this happening?!")
+        evaluator.predict_branch(dut.predict.value)
+        dut.branch_taken.value = dut.predict.value
     
     # get misprediction statistics
     evaluator.calculate_misprediction_rate()
