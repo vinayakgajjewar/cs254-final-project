@@ -1,4 +1,3 @@
-import random
 import cocotb
 from cocotb.clock import Clock
 from cocotb.triggers import RisingEdge
@@ -15,6 +14,8 @@ async def one_bit_saturation(dut):
 
     # create an instance of our evaluator
     evaluator = Evaluator()
+
+    # TODO We want to be able to specify which trace here.
     evaluator.load_trace()
 
     # generate a clock with a 10 ns period
@@ -26,25 +27,22 @@ async def one_bit_saturation(dut):
         await RisingEdge(dut.clk)
     dut.rst.value = 0
 
-    dut.counter.value = 0
+    dut.counter.value = 1
+    dut.branch_taken.value = 0
 
-    # run for 100 ns, generating random inputs for now
-    # TODO why is this sometimes printing out 'z' ???
-    for count in range(10):
+    # Get the next branch record from the trace (if there is one left.)
+    next_branch = evaluator.get_next_branch_record()
+    #while (next_branch):
+    for i in range(10):
         await RisingEdge(dut.clk)
-
-        # get the next branch instruction from the framework
-        next_branch = evaluator.get_next_branch_record()
         print(f"instruction pc: {next_branch.pc}")
-        #print(f"is branch taken: {next_branch.is_branch_taken}")
 
-        dut.branch_taken.value = random.randint(0, 1)
-        dut.counter.value = random.randint(0, 1)
         print(f"state: {dut.counter_reg.value}")
         print(f"prediction: {dut.predict.value}")
 
-        evaluator.predict_branch(dut.predict.value)
-        dut.branch_taken.value = dut.predict.value
+        # Report our current prediction and get the actual result.
+        dut.branch_taken.value = evaluator.predict_branch(dut.predict.value)
+        next_branch = evaluator.get_next_branch_record()
     
     # get misprediction statistics
     evaluator.calculate_misprediction_rate()

@@ -122,7 +122,8 @@ class Evaluator:
         br.branch_target = instr.branch_target
         return br
 
-    # Reads the prediction made by the predictor and returns if the prediction was correct or incorrect.
+    # Reads the prediction made by the predictor and returns if the prediction
+    # was correct or incorrect.
     # @param prediction: True if branch taken, false if branch not taken
     def predict_branch(self, prediction):
         if self.curr_instr >= self.num_instructions:
@@ -133,15 +134,6 @@ class Evaluator:
             self.num_correct_predicts += 1
             return True
         return False
-    
-    # This method provides a way for us to update the state of the predictor
-    # after a prediction has been made. We'll provide the branch record and some
-    # state information as well as whether or not the branch was taken.
-    # Returns:
-    # - 
-    # TODO wrong place for this method? /bhavye: I guess so. Maybe this should be in Cocotb module?
-    def update_predictor(self):
-        pass
     
     # We want to give the misprediction rate per 1000 instructions
     def calculate_misprediction_rate(self):
