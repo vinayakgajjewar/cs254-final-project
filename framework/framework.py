@@ -124,13 +124,18 @@ class Evaluator:
 
     # Reads the prediction made by the predictor and returns if the prediction
     # was correct or incorrect.
-    # @param prediction: True if the prediction is correct and false otherwise
+    # @param prediction: True if the prediction is correct and false otherwise.
+    # prediction is of type cocotb.binary.BinaryValue
     def predict_branch(self, prediction):
         if self.curr_instr >= self.num_instructions:
             return None
         instr = self.instructions[self.curr_instr]
+
+        print(f"Framework got {prediction} as the prediction")
+        print(f"(The correct prediction is {instr.is_branch_taken})")
         self.curr_instr += 1
-        if prediction == instr.is_branch_taken:
+        if prediction.integer == int(instr.is_branch_taken):
+            print("Cool! Framework says you are correct")
             self.num_correct_predicts += 1
             return True
         return False
