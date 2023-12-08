@@ -77,6 +77,11 @@ class BranchRecord:
 
 class Evaluator:
     def __init__(self):
+
+        # We want to keep a tally of both correct predictions and mispredictions
+        # (even though it seems redundant) so that if the user want to get the
+        # misprediction statistics before going through all the branch records,
+        # the results are accurate.
         self.num_correct_predicts = 0
         self.num_mispredicts = 0
         self.num_instructions = 0
@@ -103,11 +108,6 @@ class Evaluator:
             print(f"An error occurred: {e}")
 
     def reset(self):
-
-        # We want to keep a tally of both correct predictions and mispredictions
-        # (even though it seems redundant) so that if the user want to get the
-        # misprediction statistics before going through all the branch records,
-        # the results are accurate.
         self.num_correct_predicts = 0
         self.num_mispredicts = 0
 
@@ -139,7 +139,7 @@ class Evaluator:
         instr = self.instructions[self.curr_instr]
 
         print(f"Framework got {prediction} as the prediction")
-        print(f"(The correct prediction is {instr.is_branch_taken})")
+        print(f"The correct prediction is {instr.is_branch_taken}")
         self.curr_instr += 1
         if prediction.integer == int(instr.is_branch_taken):
             print("Cool! Framework says you are correct")
@@ -148,14 +148,13 @@ class Evaluator:
         self.num_mispredicts += 1
         return False
     
-    # 
+    # Print out current statistics. In my mind, the cocotb module should be able
+    # to call this function multiple times even before it's finished predicting
+    # the entire trace to get a sort of "running average" of mispredict rate.
     def calculate_misprediction_rate(self):
         num_total_predicts = self.num_correct_predicts + self.num_mispredicts
         mispredict_rate = (self.num_mispredicts / num_total_predicts)
-        print(f"number of branches = {num_total_predicts}") # TODO this is wrong! Only count # of branches that we've seen so far
+        print(f"number of branches = {num_total_predicts}")
         print(f"number of correct predictions = {self.num_correct_predicts}")
         print(f"number of mispredictions = {self.num_mispredicts}")
         print(f"misprediction rate = {mispredict_rate}")
-
-def get_prediction(dut):
-    return 
