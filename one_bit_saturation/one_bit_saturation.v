@@ -23,13 +23,12 @@ module one_bit_saturation (
 
     // Update counter based on branch outcome
     always @(posedge clk) begin
-        if (branch_taken) begin
-            if (counter_reg == NOT_TAKEN)
-                counter_reg <= TAKEN;
-        end else begin
-            if (counter_reg == TAKEN)
-                counter_reg <= NOT_TAKEN;
-        end
+        if (rst)
+            counter_reg <= NOT_TAKEN;
+        else if (branch_taken && counter_reg == NOT_TAKEN)
+            counter_reg <= TAKEN;
+        else if (!branch_taken && counter_reg == TAKEN)
+            counter_reg <= NOT_TAKEN;
     end
 
     // Predict branch outcome based on counter

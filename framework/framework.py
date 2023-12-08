@@ -124,7 +124,7 @@ class Evaluator:
 
     # Reads the prediction made by the predictor and returns if the prediction
     # was correct or incorrect.
-    # @param prediction: True if branch taken, false if branch not taken
+    # @param prediction: True if the prediction is correct and false otherwise
     def predict_branch(self, prediction):
         if self.curr_instr >= self.num_instructions:
             return None

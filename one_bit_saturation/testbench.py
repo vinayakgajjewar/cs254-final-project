@@ -41,7 +41,14 @@ async def one_bit_saturation(dut):
         print(f"prediction: {dut.predict.value}")
 
         # Report our current prediction and get the actual result.
-        dut.branch_taken.value = evaluator.predict_branch(dut.predict.value)
+        if (evaluator.predict_branch(dut.predict.value)):
+            print("Yay! Correctly predicted")
+            dut.branch_taken.value = dut.predict.value
+        else:
+            print("Aw :( Incorrectly predicted")
+            dut.branch_taken.value = not dut.predict.value
+
+        # Get the next branch
         next_branch = evaluator.get_next_branch_record()
     
     # get misprediction statistics
