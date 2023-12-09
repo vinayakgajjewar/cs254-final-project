@@ -1,3 +1,6 @@
 *.vcd
 sim_build/
 results.xml
+__pycache__/
+.DS_Store
+traces/
