@@ -2,54 +2,7 @@
 # drives the verilog, but we will have a single framework.py that provides
 # predictor-agnostic functionality. all the different cocotb testbenches will
 # use the functionality that we implement in framework.py
-
-class Instruction:
-    
-    def __init__(self):
-        self.instruction_pc = 0x0
-        self.next_pc = 0x0
-
-        self.opcode_class = 0
-        self.is_load = False     # opcode_class = 0
-        self.is_store = False    # opcode class = 1
-        self.is_op = False       # opcode class = 2
-        self.is_branch = False   # opcode class = 3
-        
-        self.is_indirect = False
-        self.is_conditional = False
-        self.is_call = False
-        self.is_return = False
-
-        self.branch_target = 0x0
-        self.is_branch_taken = False
-        self.is_floating_point = False
-
-    # Parses a line from the trace and populates the instance variables.
-    def parse_instruction(self, instr):
-        self.instruction_pc, self.is_branch_taken = instr.split()
-        return True
-
-    def load(self):
-        return self.is_load
-
-    def store(self):
-        return self.is_store
-
-    def op(self):
-        return self.is_op
-
-    def branch(self):
-        #return self.is_branch
-        return True
-
-    def floating_point(self):
-        return self.is_floating_point
-
-    # def get_pc(self):
-    #     return self.instruction_pc
-
-    # def get_next_pc(self):
-    #     return self.next_pc
+from instruction import Instruction
 
 class BranchRecord:
     def __init__(self):
@@ -72,10 +25,15 @@ class BranchRecord:
         # are always taken.
         self.branch_target = 0x0
 
-        # the PC of the instruction following the branch
-        self.next_pc = 0x0   
-
 class Evaluator:
+    traces = {
+        'dhrystone': '../riscv_traces/dhrystone.riscv.out',
+        'vec-memcpy': '../riscv_traces/vec-memcpy.riscv.out',
+        'rsort': '../riscv_traces/rsort.riscv.out',
+        'qsort': '../riscv_traces/qsort.riscv.out',
+        'mt-memcpy': '../riscv_traces/mt-memcpy.riscv.out',
+    }
+
     def __init__(self):
 
         # We want to keep a tally of both correct predictions and mispredictions
@@ -88,6 +46,30 @@ class Evaluator:
         self.instructions = []  # stored only branch instructions
         self.curr_instr = 0 # to seek into self.instructions
 
+    # Parse a trace file and read all instructions
+    def load_riscv_trace(self, name):
+        if not name in self.traces.keys():
+            print("Requested trace does not exist!")
+            return
+        try:
+            with open(self.traces[name], 'r') as trace:
+                lines = trace.readlines()
+                curr = 0
+                while curr < len(lines) - 1:
+                    instr = Instruction()
+                    parsed = instr.parse_riscv_instruction(lines[curr].strip(), lines[curr+1].strip())
+                    if not parsed:
+                        print("Error parsing: ", lines[curr].strip())
+                    if instr.branch():
+                        self.instructions.append(instr)
+                        self.num_instructions += 1
+                    curr += 1
+            print(f"Done loading trace file, found {self.num_instructions} instructions")
+        except FileNotFoundError:
+            print(f"The file '{self.traces[name]}' was not found.")
+        except Exception as e:
+            print(f"An error occurred: {e}")
+    
     # Parse a trace file and read all instructions
     def load_trace(self, path):
         try:
@@ -103,7 +85,7 @@ class Evaluator:
                         self.num_instructions += 1
             print(f"Done loading trace file, found {self.num_instructions} instructions")
         except FileNotFoundError:
-            print(f"The file '{file_path}' was not found.")
+            print(f"The file '{path}' was not found.")
         except Exception as e:
             print(f"An error occurred: {e}")
 
@@ -125,7 +107,6 @@ class Evaluator:
         # TODO: Populate more fields
         br = BranchRecord()
         br.pc = instr.instruction_pc
-        br.next_pc = instr.next_pc
         br.branch_target = instr.branch_target
         return br
 
