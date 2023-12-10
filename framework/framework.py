@@ -64,6 +64,13 @@ class Instruction:
     }
     
     def __init__(self):
+
+        # Set this field to True in parse_riscv_instruction() but keep it False
+        # in parse_instruction(). We want to keep compatibility with the zipped
+        # traces and this field lets us see which type of trace we're dealing
+        # with.
+        self.is_riscv_instruction = False
+
         self.instruction_pc = '0x0'
         self.next_pc = '0x0'
 
@@ -75,6 +82,11 @@ class Instruction:
 
     # Parses a line from the trace and populates the instance variables.
     def parse_riscv_instruction(self, curr_instr, next_instr):
+
+        # If we're in this function, we're definitely dealing with a RISC-V
+        # instruction, so set this flag accordingly.
+        self.is_riscv_instruction = True
+
         curr_split = curr_instr.split()
         if len(curr_split) < 5:  # section identifier
             return True
@@ -107,8 +119,13 @@ class Instruction:
     def store(self):
         return self.type == RiscVType.S
 
+    # With the zipped traces, each instruction is a branch instruction. With the
+    # RISC-V traces, we actually have to check.
     def branch(self):
-        return self.type == RiscVType.B
+        if self.is_riscv_instruction:
+            return self.type == RiscVType.B
+        else:
+            return True
 
     def indirect(self):
         return self.type == RiscVType.I
@@ -189,6 +206,7 @@ class Evaluator:
     def load_trace(self, path):
         try:
             with open(path, 'r') as trace:
+                print(f"Successfully opened {path}")
                 for line in trace:
                     #print(line)
                     instr = Instruction()
@@ -198,6 +216,8 @@ class Evaluator:
                     if instr.branch():
                         self.instructions.append(instr)
                         self.num_instructions += 1
+                    else:
+                        print("Not a branch instruction, skipping...")
             print(f"Done loading trace file, found {self.num_instructions} instructions")
         except FileNotFoundError:
             print(f"The file '{path}' was not found.")
