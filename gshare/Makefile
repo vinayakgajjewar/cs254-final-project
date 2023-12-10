@@ -12,7 +12,7 @@ VERILOG_SOURCES = gshare.v
 TOPLEVEL = gshare
 
 # MODULE is the basename of the Python test file
-MODULE = gshare_testbench
+MODULE = testbench
 
 # include cocotb's make rules to take care of the simulator setup
 include $(shell cocotb-config --makefiles)/Makefile.sim
