@@ -16,7 +16,8 @@ async def one_bit_saturation(dut):
     evaluator = Evaluator()
 
     # TODO We want to be able to specify which trace here.
-    evaluator.load_trace("../traces/trace_10")
+    #evaluator.load_trace("../traces/trace_10")
+    evaluator.load_riscv_trace("dhrystone")
 
     # generate a clock with a 10 ns period
     cocotb.start_soon(Clock(dut.clk, 10, 'ns').start())
